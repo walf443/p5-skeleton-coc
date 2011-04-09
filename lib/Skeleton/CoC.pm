@@ -20,13 +20,10 @@ sub parse_option {
     }
 }
 
-sub project { $_[0]->{project} }
-
 sub generate {
     my ($self, ) = @_;
 
     for my $target ( $self->targets ) {
-        next if $target eq "project";
         next unless $self->$target;
         my @depends = $self->get_depends($target);
         for my $depend ( @depends ) {
@@ -56,6 +53,7 @@ sub targets {
     my @targets = keys %{ $self };
     my @results;
     for my $target ( @targets ) {
+        next unless $self->can("get_path_$target");
         push @results, $target;
         push @results, $self->_resolve_dependency($target);
     }
