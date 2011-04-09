@@ -28,8 +28,7 @@ sub generate {
         my @depends = $self->get_depends($target);
         for my $depend ( @depends ) {
             unless ( $self->$depend ) {
-                critf("target $target\'s dependency $depend is not exist");
-                exit(1);
+                die("target $target\'s dependency $depend is not exist");
             }
         }
         my $path = $self->get_path($target, $self->{$target});
