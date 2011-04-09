@@ -1,8 +1,65 @@
 NAME
-    Skeleton::CoC -
+    Skeleton::CoC - support creating skelton for project.
 
 SYNOPSIS
-      use Skeleton::CoC;
+        package YourApp::Skeleton;
+        use parent(Skeleton::CoC);
+        use String::CamelCase qw();
+
+        __PACKAGE__->define_target('controller' => [], sub {
+            my ($self, $pkg) = @_;
+            my $path = join "/", split /::/, $pkg;
+            return "lib/YourApp/C/$path.pm";
+        });
+
+        __PACKAGE__->define_target('action' => ['controller'], sub {
+            my ($self, $str) = @_;
+            my $path = join "/", map { String::CamelCase::decamelize($_) } split /::/, $self->controller;
+            return "assets/tmpl/$path/$str.html";
+        });
+
+        __DATA__
+
+        @controller
+        ? my $self = shift; # $self is a Skeleton::CoC.
+        package <? $self->project ?>::C::<?= $self->controller ?>;
+        use strict;
+        use warnings;
+        use parent qw(YourApp::C);
+
+        ? if ( $self->action ) {
+
+        sub dispatch_<?= $self->action ?> {
+            my ($self, ) = @_;
+        }
+
+        ? }
+        1;
+
+        @@ action
+        [% INCLUDE "include/header.html" %]
+        [% INCLUDE "include/footer.html" %]
+
+    in your skeleton.pl
+
+        strict;
+        warnings;
+        use YourApp::Skeleton;
+        my $skeleton = YourApp::Skeleton->new(
+            project => "YourApp",
+            action => "index",
+        );
+        $skeleton->parse_options(@ARGV);
+        $skeleton->generate;
+
+    and run followings:
+
+        $ ./skeleton.pl controller Foo::Bar
+        # => generate lib/YourApp/C/Foo/Bar.pm
+
+        $ ./skeleton.pl controller Foo::Bar action baz
+        # => generate lib/YourApp/C/Foo/Bar.pm
+        #    generate assets/tmpl/foo/bar/baz.html
 
 DESCRIPTION
     Skeleton::CoC is

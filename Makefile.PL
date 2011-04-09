@@ -13,7 +13,12 @@ author_tests 'xt';
 build_requires 'Test::More';
 build_requires 'Test::LoadAllModules';
 build_requires 'Module::Install::ReadmeFromPod';
-use_test_base;
+
+requires 'Data::Section::Simple';
+requires 'Text::MicroTemplate';
+requires 'Log::Minimal';
+requires 'Path::Class';
+
 auto_include;
 auto_set_repository;
 WriteAll;
